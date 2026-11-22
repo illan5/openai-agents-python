@@ -166,3 +166,5 @@ plans/
 
 # Tutorial session databases.
 conversations.db
+customer_service.db
+customer_service_state.json
