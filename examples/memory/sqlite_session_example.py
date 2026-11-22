@@ -9,6 +9,9 @@ import asyncio
 
 from agents import Agent, Runner, SQLiteSession
 
+# Exercise: file where the sessions are persisted. It is ignored by git.
+DB_PATH = "conversations.db"
+
 
 async def main():
     # Create an agent
@@ -17,9 +20,11 @@ async def main():
         instructions="Reply very concisely.",
     )
 
-    # Create a session instance that will persist across runs
+    # Create a session instance that will persist across runs.
+    # Exercise: store the session in a file so it survives between executions.
+    # Run the script twice and the total item count will double.
     session_id = "conversation_123"
-    session = SQLiteSession(session_id)
+    session = SQLiteSession(session_id, DB_PATH)
 
     print("=== Session Example ===")
     print("The agent will remember previous messages automatically.\n")
@@ -71,6 +76,29 @@ async def main():
     # Get all items to show the difference
     all_items = await session.get_items()
     print(f"Total items in session: {len(all_items)}")
+
+    # Exercise: undo the last question and everything after it with pop_item().
+    # The turn can also contain reasoning or tool items, so pop until the user message is removed.
+    print("\n=== Undo Demo ===")
+    while (item := await session.pop_item()) is not None:
+        print(f"Removed: {item.get('role') or item.get('type')}")
+        if item.get("role") == "user":
+            break
+    result = await Runner.run(agent, "What was my last question?", session=session)
+    print(f"Assistant (after undo): {result.final_output}")
+
+    # Exercise: two sessions with different IDs do not share history.
+    print("\n=== Separate Sessions Demo ===")
+    session_a = SQLiteSession("user_a", DB_PATH)
+    session_b = SQLiteSession("user_b", DB_PATH)
+    await session_a.clear_session()
+    await session_b.clear_session()
+
+    await Runner.run(agent, "My name is Jose.", session=session_a)
+    result_a = await Runner.run(agent, "What's my name?", session=session_a)
+    result_b = await Runner.run(agent, "What's my name?", session=session_b)
+    print(f"user_a -> {result_a.final_output}")
+    print(f"user_b -> {result_b.final_output}")
 
 
 if __name__ == "__main__":

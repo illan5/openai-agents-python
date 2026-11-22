@@ -30,7 +30,8 @@ async def main():
     async for event in result.stream_events():
         # We'll ignore the raw responses event deltas
         if event.type == "raw_response_event":
-            continue
+            # continue
+            print(event.data.type)
         elif event.type == "agent_updated_stream_event":
             print(f"Agent updated: {event.new_agent.name}")
             continue

@@ -163,3 +163,6 @@ tmp/
 # execplans
 plans/
 .vercel
+
+# Tutorial session databases.
+conversations.db

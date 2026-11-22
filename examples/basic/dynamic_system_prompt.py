@@ -8,7 +8,9 @@ from agents import Agent, RunContextWrapper, Runner
 
 @dataclass
 class CustomContext:
-    style: Literal["haiku", "pirate", "robot"]
+    style: Literal["haiku", "pirate", "robot", "spanish"]
+    user_name: str
+
 
 
 def custom_instructions(
@@ -16,11 +18,13 @@ def custom_instructions(
 ) -> str:
     context = run_context.context
     if context.style == "haiku":
-        return "Only respond in haikus."
+        return f"Only respond in haikus. The user is called {context.user_name}"
     elif context.style == "pirate":
-        return "Respond as a pirate."
+        return f"Respond as a pirate. The user is called {context.user_name}"
+    elif context.style == "spanish":
+            return f"Respond in spanish. The user is called {context.user_name}"
     else:
-        return "Respond as a robot and say 'beep boop' a lot."
+        return f"Respond as a robot and say 'beep boop' a lot The user is called {context.user_name}."
 
 
 agent = Agent(
@@ -30,7 +34,7 @@ agent = Agent(
 
 
 async def main():
-    context = CustomContext(style=random.choice(["haiku", "pirate", "robot"]))
+    context = CustomContext(style=random.choice(["haiku", "pirate", "robot", "spanish"]), user_name="Jose")
     print(f"Using style: {context.style}\n")
 
     user_message = "Tell me a joke."

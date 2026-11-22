@@ -31,7 +31,7 @@ agent = Agent(
 
 
 async def main():
-    result = await Runner.run(agent, input="What's the weather in Tokyo?")
+    result = await Runner.run(agent, input="What's the weather in Tokyo and Madrid?")
     print(result.final_output)
     # The weather in Tokyo is sunny.
 
